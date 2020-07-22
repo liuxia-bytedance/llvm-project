@@ -21,6 +21,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    - name: install-ninja
+      run: brew install ninja
     - name: print-cmake-version
       run: cmake --version
+    - name: cmake-config
+      run: |
+        mkdir build && cd build
+        cmake ../llvm -G Ninja
+    - name: cmake-build
+      run: ninja
