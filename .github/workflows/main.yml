@@ -14,20 +14,29 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: macOS-latest
 
     steps:
     - uses: actions/checkout@v2
+
     - name: install-ninja
       run: brew install ninja
-    - name: print-cmake-version
-      run: cmake --version
+
     - name: cmake-config
       run: |
         mkdir build && cd build
-        cmake ../llvm -G Ninja
+        cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DCMAKE_INSTALL_PREFIX=./ -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt" ../llvm -G Ninja
+
     - name: cmake-build
       run: cd build && ninja
+
+    - name: install-toolchain
+      run:  |
+        cd build
+        cmake --build . --target install-xcode-toolchain
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: build-product
+        path: build/Toolchains
