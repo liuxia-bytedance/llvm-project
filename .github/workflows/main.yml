@@ -30,4 +30,4 @@ jobs:
         mkdir build && cd build
         cmake ../llvm -G Ninja
     - name: cmake-build
-      run: ninja
+      run: cd build && ninja
