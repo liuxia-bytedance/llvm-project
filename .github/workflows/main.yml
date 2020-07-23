@@ -26,7 +26,7 @@ jobs:
     - name: cmake-config
       run: |
         mkdir build && cd build
-        cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DCMAKE_INSTALL_PREFIX=./ -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt" ../llvm -G Ninja
+        cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DCMAKE_INSTALL_PREFIX=./ -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt" -DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=ON ../llvm -G Ninja
 
     - name: cmake-build
       run: cd build && ninja
@@ -36,7 +36,12 @@ jobs:
         cd build
         cmake --build . --target install-xcode-toolchain
 
+    - name: archive-toolchain
+      run: |
+        cd build/Toolchains
+        zip -r toolchain.zip *.xctoolchain
+
     - uses: actions/upload-artifact@v2
       with:
         name: build-product
-        path: build/Toolchains
+        path: build/Toolchains/toolchain.zip
